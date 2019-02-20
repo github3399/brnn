@@ -1,0 +1,339 @@
+syntax = "proto3";
+
+//========================================================Request/Response Message========================================================
+message RequestMessage {
+    int32 messageType = 1;      //消息类型ID，自动生成
+    string traceActivityId = 2; //日志跟踪ID，客户端随机生成，每个请求唯一标记
+    bytes body = 3;             //消息内容，对应消息ID
+}
+
+message ResponseMessage {
+    int32 messageType = 1;      //消息类型ID，自动生成
+    ErrorCode errorCode = 2;    //错误编号，文档另附上
+    bytes body = 3;             //消息内容，对应消息ID
+}
+
+//========================================================请求========================================================
+
+//退出游戏
+message ExitGameRequest {
+}
+
+//抢庄
+message BankerRequest {
+    double deposit = 1; //抢庄金额
+}
+
+//取消抢庄
+message CancelBankerRequest {
+}
+
+//下注
+message BetRequest {
+    double amount = 1;  //下注金额
+}
+
+//抢红包
+message CheckRequest {
+}
+
+//领取奖励
+message AcceptAwardRequest {
+    int64 id = 1; //奖励编号
+}
+
+//获取奖励列表
+message ListAwardsRequest {
+}
+
+//获取历史订单
+message ListGameRecordsRequest {
+}
+
+//获取连赢和组合请求
+message GetAwardStatusRequest {
+}
+
+//========================================================响应========================================================
+
+//登录响应
+message LoginResponse {
+    Player player = 1;          //玩家信息
+    GameState gameState = 2;    //游戏状态
+}
+
+//退出游戏响应
+message ExitGameResponse {
+}
+
+//抢庄响应
+message BankerResponse {
+}
+
+//取消抢庄响应
+message CancelBankerRespose {
+}
+
+//下注响应
+message BetResponse {
+}
+
+//抢红包响应
+message CheckResponse {
+}
+
+//领取奖励响应
+message AcceptAwardResponse {
+}
+
+//获取奖励列表响应
+message ListAwardsResponse {
+    repeated Award awards = 1;
+}
+
+//获取历史订单响应
+message ListGameRecordsResponse {
+    repeated GameRecord gameRecords = 1;
+}
+
+//获取连赢和组合响应
+message GetAwardStatusResponse {
+    StraightStatus straightStatus = 1;                      //连赢信息
+    repeated SpecialHandsStatus specialHandsStatus = 2; //组合信息
+}
+//========================================================通知========================================================
+
+//玩家进入游戏事件
+message PlayerEnterEvent {
+    Player player = 1;      //玩家信息
+    int32 onlineUsers = 2;  //在线人数
+}
+
+//玩家离开游戏事件
+message PlayerExitEvent {
+    string accountName = 1; //玩家账号
+    int32 onlineUsers = 2;  //在线人数   
+}
+
+//游戏状态更新事件
+message GameStateUpdatedEvent {
+    int32 state = 1;    //当前状态(0: 等待更多玩家, 1:准备开始(data为当前局号), 2:抢庄, 3:确定庄家(data为主庄家账号), 4:开始下注, 5:停止下注, 6:抢红包, 7:结算)
+    int32 timeout = 2;  //倒计时
+    string data = 3;    //状态数据
+}
+
+//游戏模式更新事件
+message GameModeUpdatedEvent {
+    int32 mode = 1; //模式(1:抢庄模式 2:福利庄模式)
+}
+
+//抢庄事件
+message BankerEvent {
+    string accountName = 1; //抢庄玩家
+    double amount = 2;      //抢庄金额
+}
+
+//下注事件
+message BetEvent {
+    string accountName = 1; //玩家账号
+    double balance = 2;     //玩家新余额
+    BetRecord record = 3;   //下注记录
+}
+
+//发红包事件
+message RedPacketEvent {
+    int32 amount = 1;           //红包金额
+    int32 numOfRedPackets = 2;  //总红包数量
+    int32 totalAmount = 3;      //总红包金额
+}
+
+//抢红包事件
+message CheckEvent {
+    string accountName = 1; //玩家账号
+    int32 redPacket = 2;    //红包金额
+    double balance = 3;     //玩家新余额
+}
+
+//退庄事件
+message BankerCanceledEvent {
+    string accountName = 1; //玩家账号
+    double balance = 2;     //玩家余额
+}
+
+//结算事件
+message SettlementEvent {
+    GameResult gameResult = 1;              //游戏结果
+    repeated Settlement settlements = 2;    //结算信息列表
+}
+
+//玩家更新金币事件
+message UserBalanceUpdatedEvent {
+    string accountName = 1; //玩家账号
+    double balance = 2;     //余额
+    int32 reason = 3;       //更新原因: 1 游戏结算, 2 充值加分, 3 兑现减分, 4 抢庄, 5 退庄, 6 下注, 7 抢红包, 8 奖励
+}
+
+//可获得奖励事件
+message AwardAvaliableEvent {
+    Award award = 1;   //可领取的奖励信息
+}
+
+//领取奖励事件
+message AwardAcceptedEvent {
+    string accountName = 1; //玩家账号
+    Award award = 2;        //奖励信息
+    double balance = 3;     //用户新余额
+}
+
+message AwardCanceledEvent {
+    int64 id = 1;   //奖励ID
+}
+
+//游戏配置更新事件
+message ConfigUpdatedEvent {
+    GameConfig gameConfig = 1;  //游戏配置，没有更新的项目为空
+}
+
+//强制用户退出游戏
+message ForcePlayerExitEvent {
+    string accountName = 1;     //玩家账号
+}
+
+//========================================================结构体========================================================
+
+//游戏状态
+message GameState {
+    int32 mode = 1;                 //模式(1:抢庄模式 2:福利庄模式)
+    int32 state = 2;                //当前状态(0: 等待更多玩家, 1:准备开始(context为当前局号), 2:抢庄, 3:下注, 4:停止下注, 5:抢红包, 6:结束)
+    int32 timeout = 3;              //当前状态倒计时
+    string inning = 4;              //当前局号
+    string banker = 5;              //当前庄
+    double maxRatio = 6;            //最高赔率
+    RedPacket bankerRedPacket = 7;  //当前庄红包
+    GameConfig gameConfig = 8;      //当前游戏配置
+    repeated Player players = 9;    //玩家列表
+}
+
+//玩家信息
+message Player {
+    string accountName = 1;         //账号
+    string name = 2;                //昵称
+    int32 gender = 3;               //性别(0:女,1:男)
+    double balance = 4;             //余额
+    string avatar = 5;              //头像
+    RedPacket redPacket = 6;        //玩家当前的红包
+    repeated BetRecord bets = 7;    //当前下注记录, 包括玩家下注和抢庄下注(参考BetRecord的type来区分)
+}
+
+// 游戏配置
+message GameConfig {
+    GameLimitsConfig betLimits = 1;                                 //游戏限制配置
+    repeated BeneficialBankerConfig beneficialBankerConfigs = 2;    //福利庄配置
+    repeated StraightAwardConfig straightAwardConfigs = 3;          //连赢奖励配置
+    repeated SpecialHandsAwardConfig specialHandsAwardConfigs = 4;  //组合奖励配置
+}
+
+//福利庄设置
+message BeneficialBankerConfig {
+    int64 startTime = 1;        //开始时间, 1970/1/1至今的毫秒数(Epoch)
+    int32 innings = 2;          //福利庄局数
+    double bankerAmount = 3;    //庄总金额
+}
+
+//游戏限制
+message GameLimitsConfig {
+    double playerMinBet = 1;    //玩家最低下注
+    double playerMaxBet = 2;    //玩家最高下注
+    double bankerMinBet = 3;    //抢庄最低下注
+    double bankerMaxBet = 4;    //庄最高金额
+    int32 maxBets = 5;          //玩家最多下注次数
+}
+
+//连赢奖励配置
+message StraightAwardConfig {
+    int32 numOfInning = 1;  //连赢局数
+    double minBet = 2;      //最低下注
+    double amount = 3;      //奖励金额
+}
+
+//组合奖励配置
+message SpecialHandsAwardConfig {
+    int32 kind = 1;         //组合类型，0-15，0为0.01，1-10为牛一到牛牛，11 对子，12 顺子，13 倒顺，14 满牛，15 豹子
+    int32 numOfHands = 2;   //组合数量
+    double minBet = 3;      //最低下注
+    double amount = 4;      //奖励金额
+}
+
+//红包信息
+message RedPacket {
+    int32 amount = 1; //金额,单位:分
+    bool checked = 2; //是否已经打开
+}
+
+//下注记录
+message BetRecord {
+    int32 type = 1;         //下注类型 1:抢庄, 2:玩家下注
+    double amount = 2;      //下注金额
+    int64 time = 3;         //下注时间
+}
+
+// 用户历史订单记录
+message GameRecord {
+    string inning = 1;          //局号
+    double playerBet = 2;       //玩家投注
+    double bankerBet = 3;       //抢庄投注
+    bool isBanker = 4;          //是否是主庄
+    int64 betTime = 5;          //最后一笔投注时间
+    int32 redPacket = 6;        //本局红包，单位:分
+    double winAmount = 7;       //本局输赢
+    GameResult gameResult = 8;  //游戏结果
+}
+
+//游戏结果
+message GameResult {
+    string inning = 1;          //局号
+    int32 numOfRedPacket = 2;   //总红包数量
+    int32 totalRedPacket = 3;   //红包总金额，单位:分
+    int64 startBetTime = 4;     //开始投注时间
+    int64 endBetTime = 5;       //结束投注时间
+    int32 bankerRedPacket = 6;  //庄家红包，单位:分
+    double bankerWinAmount = 7; //庄家输赢
+    double systemWinAmount = 8; //系统输赢
+}
+
+//结算信息
+message Settlement {
+    string accountName = 1; // 玩家名称
+    int32 redPacket = 2;    //红包金额
+    double winAmount = 3;   //本局输赢
+    double balance = 4;     //结算后玩家余额
+}
+
+//奖励信息
+message Award {
+    int64 id = 1;           // 奖励编号, 用于领取奖励
+    int32 award = 2;        // 奖励类型 1-连赢奖，2-组合奖
+    int32 param1 = 3;       // 连赢奖的话是连赢的局数，组合奖是组合类型
+    int32 param2 = 4;       // 连赢奖不用该参数，组合奖为组合数量
+    double amount = 5;      // 奖励金额
+}
+
+//连赢状态
+message StraightStatus {
+    int32 numOfInning = 1;  //连赢局数
+    double minBet = 2;      //最低下注
+}
+
+//组合状态
+message SpecialHandsStatus {
+    int32 kind = 1;         //组合类型，0-15，0为0.01，1-10为牛一到牛牛，11 对子，12 顺子，13 倒顺，14 满牛，15 豹子
+    int32 numOfHands = 2;   //组合数量
+    double minBet = 3;      //最低下注
+}
+
+enum ErrorCode {
+    Success = 0;                //成功
+    InsufficientFund = -1001;   //余额不够
+    NotAllowed = -1002;         //不允许操作
+    Unknown = -1003;            //未知错误
+}
