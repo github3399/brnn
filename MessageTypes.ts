@@ -3,7 +3,7 @@
 // DO NOT EDIT!
 
 namespace Brnn.Proto{
-    export enum MessageTypes {
+    public enum MessageTypes : int {
         AcceptAwardRequest = 0x1001,
         AcceptAwardResponse = 0x1002,
         Award = 0x1003,
