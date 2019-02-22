@@ -243,10 +243,10 @@ message BeneficialBankerConfig {
 //游戏限制
 message GameLimitsConfig {
     double playerMinBet = 1;    //玩家最低下注
-    double playerMaxBet = 2;    //玩家最高下注
-    double bankerMinBet = 3;    //抢庄最低下注
-    double bankerMaxBet = 4;    //庄最高金额
-    int32 maxBets = 5;          //玩家最多下注次数
+    double bankerMinBet = 2;    //抢庄最低下注
+    double bankerMaxBet = 3;    //庄最高金额
+    int32 maxBets = 4;          //玩家最多下注次数
+    double maxBetRatio = 5;     //最高赔率
 }
 
 //连赢奖励配置
