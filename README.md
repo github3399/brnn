@@ -19,9 +19,9 @@
 * > **dependency_failed** API所依赖的第三方服务调用失败，对应response code 500
 * > **object_conflict** 所请求的对象与现有的对象冲突，对应response code 409
 * > **more_data** 需要更多的数据完成请求对象（具体API会具体说明需要什么数据），对应response code 200-299
-* > **service_not_ready** 系统服务还没有就绪，可以重试，对应response code 503
+* > **service_not_ready** 系统服务还没有就绪，可以重试，对应response code 503
 * > **invalid_credentials** 无效的用户令牌或者非法的用户信息，对应response code 401或者400
-* > **password_change_required** 需要修改密码（发生在登录API上），对应response code 200-299
+* > **password_change_required** 需要修改密码（发生在登录API上），对应response code 200-299
 * > **not_supported** API不支持所请求的操作，请联系客服
 * > **unknwn** 未知系统错误，对应response code 500
 * > **challenge_failed** 用户密保问题答案中有无效的答案
@@ -703,6 +703,51 @@ Content-Type: application/json
 {
   redirectUrl:"跳转地址,需要访问该地址来完成支付"
 }
+
+
+## 兑奖
+
+### 提交兑奖请求
+```
+POST /api/Payment/Payout
+
+x-rainier-ticket: <用户令牌>
+Content-Type: application/json
+{
+  "amount": 金额
+}
+```
+返回对象
+```
+{
+  id: <订单ID>
+}
+```
+
+可能返回的错误
+* > 400 invalid_data 金额超出用户余额
+* > 400 bank_account_required 需要先填写银行卡信息
+* > 400 user_in_game 用户还在游戏当中，请断开游戏连接
+
+### 获取兑奖订单列表
+```
+GET /api/User/<userId>/Payments?type=2
+
+x-rainier-ticket: <用户令牌>
+```
+返回对象
+```
+[
+  {
+    id: 编号,
+    amount: 金额,
+    createTime: 提交时间,
+    status: 当前状态, 2 - 等待, 3 - 已批准, 4 - 已拒绝
+    lastUpdatedTime: 最后更新时间
+  }
+]
+```
+请注意：所有的时间都是epoch时间，1970/1/1至今的毫秒数
 
 ## 游戏通道规范
 
