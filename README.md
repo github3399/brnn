@@ -1,3 +1,13 @@
+# Brnn
+
+## 安装说明
+
+### 项目依赖
+1. MySql数据库5.7以上
+
+### 数据库初始化
+初始化脚本文件 `dbinit.sql`
+
 ## API 文档
 
 ### 约定
@@ -19,15 +29,15 @@
 * > **dependency_failed** API所依赖的第三方服务调用失败，对应response code 500
 * > **object_conflict** 所请求的对象与现有的对象冲突，对应response code 409
 * > **more_data** 需要更多的数据完成请求对象（具体API会具体说明需要什么数据），对应response code 200-299
-* > **service_not_ready** 系统服务还没有就绪，可以重试，对应response code 503
+* > **service_not_ready** 系统服务还没有就绪，可以重试，对应response code 503
 * > **invalid_credentials** 无效的用户令牌或者非法的用户信息，对应response code 401或者400
-* > **password_change_required** 需要修改密码（发生在登录API上），对应response code 200-299
+* > **password_change_required** 需要修改密码（发生在登录API上），对应response code 200-299
 * > **not_supported** API不支持所请求的操作，请联系客服
 * > **unknwn** 未知系统错误，对应response code 500
 * > **challenge_failed** 用户密保问题答案中有无效的答案
 * > **bank_account_required** 需要完善银行卡信息，该错误信息一般由申请兑奖时发生，对应response code 400
 
-5. 如果客户端启用Cookie则登录以后调用所有的API的时候不需要传入用户令牌
+5. 如果客户端启用Cookie则登录以后调用所有的API的时候不需要传入用户令牌，同时所有的可选参数都可以不必传入
 
 ### 获取验证码图片
 ```
@@ -35,7 +45,7 @@ GET /Home/CaptchaImage?token=[token]
 ```
 API返回PNG二进制图片数据。
 > **token**是可选参数，值由客户端传入，必须是唯一标识，用来关联验证码图片和验证码，登录和注册的时候需要将*token*传入。
->  如果*token*为空，那么服务器将会把验证码和用户会话信息通过cookie关联。
+>  如果*token*为空，那么服务器将会把验证码和用户会话信息通过cookie关联。
 
 ### 用户注册
 ```
@@ -414,6 +424,113 @@ x-rainier-ticket: <用户令牌>
 }
 ```
 
+### 获取用户充值记录
+```
+GET /api/User/<id>/Payments
+
+x-rainier-ticket: <用户令牌>
+```
+返回对象
+```
+[
+  {
+      "id": 10021,
+      "userId": 1032,
+      "tenantId": 0,
+      "type": 1,
+      "channelId": 1,
+      "amount": 500.0,
+      "status": 3,
+      "createTime": 1551577119355,
+      "lastUpdatedTime": 1551577187000,
+      "orderId": "0E789D525B56A69040636297398095B5"
+  },
+  {
+      "id": 10022,
+      "userId": 1032,
+      "tenantId": 0,
+      "type": 1,
+      "channelId": 1,
+      "amount": 500.0,
+      "status": 3,
+      "createTime": 1551577119355,
+      "lastUpdatedTime": 1551577187000,
+      "orderId": "0E789D525B56A69040636297398095B5"
+  },
+  ...
+]
+```
+
+### 获取用户兑奖记录
+```
+GET /api/User/<id>/Payments?type=2
+
+x-rainier-ticket: <用户令牌>
+```
+返回对象
+```
+[
+  {
+      "id": 10021,
+      "userId": 1032,
+      "tenantId": 0,
+      "type": 1,
+      "channelId": 1,
+      "amount": 500.0,
+      "status": 3,
+      "createTime": 1551577119355,
+      "lastUpdatedTime": 1551577187000,
+      "orderId": "0E789D525B56A69040636297398095B5"
+  },
+  {
+      "id": 10022,
+      "userId": 1032,
+      "tenantId": 0,
+      "type": 1,
+      "channelId": 1,
+      "amount": 500.0,
+      "status": 3,
+      "createTime": 1551577119355,
+      "lastUpdatedTime": 1551577187000,
+      "orderId": "0E789D525B56A69040636297398095B5"
+  },
+  ...
+]
+```
+
+### 获取用户登录记录
+```
+GET /api/User/<id>/LoginLogs
+
+x-rainier-ticket: <用户令牌>
+```
+返回对象
+```
+[
+  {
+    "id": 435,
+    "user": {
+      "id": 1032
+    },
+    "browser": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) LayaAirIDE/1.12.2 Chrome/56.0.2924.87 Electron/1.6.6 Safari/537.36",
+    "ip": "123.xxx.xxx.xxx",
+    "timestamp": 1551521567892,
+    "time": "2019-03-02T10:12:47.892Z"
+  },
+  {
+    "id": 434,
+    "user": {
+      "id": 1032
+    },
+    "browser": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) LayaAirIDE/1.12.2 Chrome/56.0.2924.87 Electron/1.6.6 Safari/537.36",
+    "ip": "123.xxx.xxx.xxx",
+    "timestamp": 1551519618582,
+    "time": "2019-03-02T09:40:18.582Z"
+  },
+  ...
+]
+```
+
 ### 获取直属代理
 ```
 GET /api/User/<id>/Agents?page=[第几页]&pageToken=[上一次请求拿到的pageToken]
@@ -703,7 +820,6 @@ Content-Type: application/json
 {
   redirectUrl:"跳转地址,需要访问该地址来完成支付"
 }
-
 
 ## 兑奖
 
