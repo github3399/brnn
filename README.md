@@ -342,6 +342,57 @@ Content-Type: application/json
 可能的错误
 * > 400 错误代码 invalid_data 取款密码不对或者金额无效
 
+### 赠送金币
+```
+POST /api/User/<用户ID>/TransferTo
+
+x-rainier-ticket:<用户令牌>
+Content-Type: application/json
+
+{
+    "accountName": "13345670892",
+    "amount": 1000
+}
+```
+返回对象
+```
+{
+  id: 用户ID
+  balance: 用户新余额
+}
+```
+可能的错误
+* > 400 错误代码 invalid_data 金额不得小于等于0; object_not_found 目标用户不存在
+* > 404 用户不存在
+
+### 赠送金币记录
+```
+GET /api/User/<用户ID>/TransferLogs
+
+x-rainier-ticket:<用户令牌>
+```
+返回对象
+```
+[
+  {
+    "id": 20,
+    "amount": -1000.0,
+    "balanceBefore": 10000.0, //开始余额
+    "balanceAfter": 9000.0, //结束余额
+    "timestamp": 1551680937135, //赠送时间
+    "destination": "13345670892" //目标用户
+  },
+  {
+    "id": 22,
+    "amount": -1000.0,
+    "balanceBefore": 9000.0,
+    "balanceAfter": 8000.0,
+    "timestamp": 1551681316293,
+    "destination": "13345670892",
+  }
+]
+```
+
 ### 获取银行卡信息
 ```
 GET /api/User/<id>/BankAccount
