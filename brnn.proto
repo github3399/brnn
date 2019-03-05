@@ -227,10 +227,11 @@ message Player {
 
 // 游戏配置
 message GameConfig {
-    GameLimitsConfig betLimits = 1;                                 //游戏限制配置
-    repeated BeneficialBankerConfig beneficialBankerConfigs = 2;    //福利庄配置
-    repeated StraightAwardConfig straightAwardConfigs = 3;          //连赢奖励配置
-    repeated SpecialHandsAwardConfig specialHandsAwardConfigs = 4;  //组合奖励配置
+    double preservedBalance = 1;                                    //用户预留余额
+    GameLimitsConfig betLimits = 2;                                 //游戏限制配置
+    repeated BeneficialBankerConfig beneficialBankerConfigs = 3;    //福利庄配置
+    repeated StraightAwardConfig straightAwardConfigs = 4;          //连赢奖励配置
+    repeated SpecialHandsAwardConfig specialHandsAwardConfigs = 5;  //组合奖励配置
 }
 
 //福利庄设置
