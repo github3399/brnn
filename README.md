@@ -131,7 +131,7 @@ x-rainier-ticket: <用户令牌>
 
 ### 获取当前登录用户信息
 ```
-GET /api/User/Me
+GET /api/User/Me?[promotionUrl=true]
 
 x-rainier-ticket: <用户令牌>
 ```
@@ -154,6 +154,7 @@ x-rainier-ticket: <用户令牌>
         "email": null,
         "phone": null,
         "promotionCode": "7AMAAAAAAAA",
+        "promotionUrl": "http://t.cn/EMgONSD",
         "status": 1,
         "hasSubAccounts": false,
         "createTimestamp": 0,
@@ -163,6 +164,8 @@ x-rainier-ticket: <用户令牌>
     }
 }
 ```
+
+* > 要获取用户推广URL的时候带参数promotionUrl=true，返回的推广URL在promotionUrl属性里面。
 
 ### 获取用户密保问题列表
 ```
