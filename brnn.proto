@@ -1,4 +1,6 @@
 syntax = "proto3";
+package com.jdgame88.games.brnn.net.socket.proto;
+option csharp_namespace = "Brnn.Proto";
 
 //========================================================Request/Response Message========================================================
 message RequestMessage {
@@ -259,10 +261,9 @@ message StraightAwardConfig {
 
 //组合奖励配置
 message SpecialHandsAwardConfig {
-    int32 kind = 1;         //组合类型，0-15，0为0.01，1-10为牛一到牛牛，11 对子，12 顺子，13 倒顺，14 满牛，15 豹子
-    int32 numOfHands = 2;   //组合数量
-    double minBet = 3;      //最低下注
-    double amount = 4;      //奖励金额
+    double minBet = 1;      //最低下注
+    double amount = 2;      //奖励金额
+    string settings = 3;    //设置内容，格式为: 组合类型1:组合数量1,组合类型2:组合数量2,... 比如： 0:5,11:6,13:5 表示要同时有5组0.01牌型，6组金牛和5组顺子才能得到奖励.
 }
 
 //红包信息
@@ -314,8 +315,7 @@ message Settlement {
 message Award {
     int64 id = 1;           // 奖励编号, 用于领取奖励
     int32 award = 2;        // 奖励类型 1-连赢奖，2-组合奖
-    int32 param1 = 3;       // 连赢奖的话是连赢的局数，组合奖是组合类型
-    int32 param2 = 4;       // 连赢奖不用该参数，组合奖为组合数量
+    string param = 3;       // 参数，连赢奖为连赢的局数，组合奖是组合内容，格式为：组合类型1:组合数量1,组合类型2:组合数量2,... 比如： 0:5,11:6,13:5 表示有5组0.01牌型，6组金牛和5组顺子
     double amount = 5;      // 奖励金额
 }
 
@@ -327,7 +327,7 @@ message StraightStatus {
 
 //组合状态
 message SpecialHandsStatus {
-    int32 kind = 1;         //组合类型，0-15，0为0.01，1-10为牛一到牛牛，11 对子，12 顺子，13 倒顺，14 满牛，15 豹子
+    int32 kind = 1;         //组合类型，0-15，0为0.01，1-10为牛一到牛牛，11 金牛, 12 对子，13 顺子，14 倒顺，15 满牛，16 豹子
     int32 numOfHands = 2;   //组合数量
     double minBet = 3;      //最低下注
 }
