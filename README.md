@@ -919,6 +919,22 @@ x-rainier-ticket: <用户令牌>
 ```
 请注意：所有的时间都是epoch时间，1970/1/1至今的毫秒数
 
+
+### 获取系统公告信息
+```
+GET /api/Notice
+
+x-rainier-ticket: <用户令牌>
+```
+返回对象
+```
+{
+  "id": 编号,
+  "title": 标题,
+  "content": 内容
+}
+```
+
 ## 游戏通道规范
 
 ### Web Socket地址
