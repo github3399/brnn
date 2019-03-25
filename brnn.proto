@@ -56,12 +56,18 @@ message ListGameRecordsRequest {
 message GetAwardStatusRequest {
 }
 
+//广播请求
+message BroadcastRequest {
+    Message message = 1;    //消息
+}
+
 //========================================================响应========================================================
 
 //登录响应
 message LoginResponse {
-    Player player = 1;          //玩家信息
-    GameState gameState = 2;    //游戏状态
+    Player player = 1;              //玩家信息
+    GameState gameState = 2;        //游戏状态
+    repeated Message messages = 3;  //当前聊天室消息列表
 }
 
 //退出游戏响应
@@ -102,6 +108,10 @@ message ListGameRecordsResponse {
 message GetAwardStatusResponse {
     StraightStatus straightStatus = 1;                      //连赢信息
     repeated SpecialHandsStatus specialHandsStatus = 2; //组合信息
+}
+
+// 广播响应
+message BroadcastResponse {
 }
 //========================================================通知========================================================
 
@@ -201,6 +211,10 @@ message ForcePlayerExitEvent {
     string accountName = 1;     //玩家账号
 }
 
+//广播用户消息事件
+message BroadcastEvent {
+    Message message = 1;    //消息
+}
 //========================================================结构体========================================================
 
 //游戏状态
@@ -330,6 +344,12 @@ message SpecialHandsStatus {
     int32 kind = 1;         //组合类型，0-15，0为0.01，1-10为牛一到牛牛，11 金牛, 12 对子，13 顺子，14 倒顺，15 满牛，16 豹子
     int32 numOfHands = 2;   //组合数量
     double minBet = 3;      //最低下注
+}
+
+//用户消息
+message Message {
+    string from = 1;        //消息发送者
+    string content = 2;     //消息内容
 }
 
 enum ErrorCode {
